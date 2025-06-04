@@ -1,0 +1,179 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 325
+          },
+          "nodeIndex": "fBaseVendas",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1,
+            "y": 0
+          },
+          "nodeIndex": "dClientes",
+          "nodeLineageTag": "d51ee8d1-cb81-47c1-8c52-2c25d2d9f4e0",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 283,
+            "y": 0
+          },
+          "nodeIndex": "dProdutos",
+          "nodeLineageTag": "a212fd74-7cb0-45ea-abf2-c2774449ba4f",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 569,
+            "y": 0
+          },
+          "nodeIndex": "dLojas",
+          "nodeLineageTag": "ccfcbbce-88b9-4dcc-ba4b-cf9cf02600c3",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1029.2000122070313,
+            "y": 316.5
+          },
+          "nodeIndex": "fDevoluções",
+          "nodeLineageTag": "1ad7d3a4-b169-41d9-9bb7-82b3cf6d918c",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1218.2847579697432,
+            "y": 119.1101694915254
+          },
+          "nodeIndex": "Medidas",
+          "nodeLineageTag": "e2918008-fab3-4e61-aa56-fcb522cb693c",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 890.420351190082,
+            "y": 16.872881355932222
+          },
+          "nodeIndex": "dCalendário",
+          "nodeLineageTag": "5413f4ef-5f8c-4bb2-9859-9f7e7e3d654c",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1502.2847579697432,
+            "y": 0
+          },
+          "nodeIndex": "Parâmetro",
+          "nodeLineageTag": "775eafcf-a0b3-474e-b8d1-91c81fd57d71",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 60,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 1,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 209
+          },
+          "nodeIndex": "fDevoluções",
+          "nodeLineageTag": "1ad7d3a4-b169-41d9-9bb7-82b3cf6d918c",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 640.20000076293945,
+            "y": 198
+          },
+          "nodeIndex": "fBaseVendas",
+          "nodeLineageTag": "9eb426af-f5bd-43b7-a4a1-5d98826ec9f1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 304.20000076293945,
+            "y": 0
+          },
+          "nodeIndex": "dProdutos",
+          "nodeLineageTag": "a212fd74-7cb0-45ea-abf2-c2774449ba4f",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Layout 1",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

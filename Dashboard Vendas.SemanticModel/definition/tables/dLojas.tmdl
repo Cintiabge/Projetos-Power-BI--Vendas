@@ -1,0 +1,102 @@
+table dLojas
+	excludeFromModelRefresh
+	lineageTag: ccfcbbce-88b9-4dcc-ba4b-cf9cf02600c3
+
+	column 'ID Loja'
+		dataType: int64
+		formatString: 0
+		lineageTag: b6876255-42bf-43d4-9489-cbf5b7a76f45
+		summarizeBy: none
+		sourceColumn: ID Loja
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome da Loja'
+		dataType: string
+		lineageTag: cc917abc-4ece-4c10-bfb3-9b7c234782c0
+		summarizeBy: none
+		sourceColumn: Nome da Loja
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Gerente'
+		dataType: string
+		lineageTag: 1bfaa666-4912-4c68-ab87-c91a99057343
+		summarizeBy: none
+		sourceColumn: Nome Gerente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quantidade Colaboradores'
+		dataType: int64
+		formatString: 0
+		lineageTag: 29fe35b5-8e7c-472a-8e17-647996bf6f78
+		summarizeBy: sum
+		sourceColumn: Quantidade Colaboradores
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo
+		dataType: string
+		lineageTag: f794cb10-6f04-407d-a70f-88d1ddd3fe25
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'id Localidade'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9ad25af8-e6f9-4ca1-b8d2-3136ea380646
+		summarizeBy: sum
+		sourceColumn: id Localidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Documento Gerente'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8cd5a3ec-525d-4272-8405-1f6ef34a32d2
+		summarizeBy: sum
+		sourceColumn: Documento Gerente
+
+		annotation SummarizationSetBy = Automatic
+
+	column País
+		dataType: string
+		lineageTag: 4854fe89-a274-40ef-b119-72151c647f38
+		summarizeBy: none
+		sourceColumn: País
+
+		annotation SummarizationSetBy = Automatic
+
+	column Continente
+		dataType: string
+		lineageTag: e182b2e6-24e6-4587-935c-84c89f143e94
+		summarizeBy: none
+		sourceColumn: Continente
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dLojas = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados\Cadastro Lojas.xlsx"), null, true),
+				    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"ID Loja", Int64.Type}, {"Nome da Loja", type text}, {"Quantidade Colaboradores", Int64.Type}, {"Tipo", type text}, {"id Localidade", Int64.Type}, {"Gerente Loja", type text}, {"Documento Gerente", Int64.Type}}),
+				    #"Texto Extraído Após o Delimitador" = Table.TransformColumns(#"Tipo Alterado", {{"Nome da Loja", each Text.AfterDelimiter(_, " "), type text}}),
+				    #"Coluna Personalizada Adicionada" = Table.AddColumn(#"Texto Extraído Após o Delimitador", "Nome Gerente", each let splitGerenteLoja = Splitter.SplitTextByDelimiter(", ", QuoteStyle.None)([Gerente Loja]) in Text.Combine({splitGerenteLoja{1}?, " ", splitGerenteLoja{0}?}), type text),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Coluna Personalizada Adicionada",{"Gerente Loja"}),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Colunas Removidas",{"ID Loja", "Nome da Loja", "Nome Gerente", "Quantidade Colaboradores", "Tipo", "id Localidade", "Documento Gerente"}),
+				    #"Consultas Mescladas" = Table.NestedJoin(#"Colunas Reordenadas", {"id Localidade"}, dLocalidades, {"ID Localidade"}, "CadastroLocalidades", JoinKind.LeftOuter),
+				    #"CadastroLocalidades Expandido" = Table.ExpandTableColumn(#"Consultas Mescladas", "CadastroLocalidades", {"País", "Continente"}, {"País", "Continente"}),
+				    #"Valor Substituído" = Table.ReplaceValue(#"CadastroLocalidades Expandido","Oceania","Austrália",Replacer.ReplaceText,{"Continente"})
+				in
+				    #"Valor Substituído"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

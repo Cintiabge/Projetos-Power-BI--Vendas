@@ -1,0 +1,106 @@
+table dProdutos
+	lineageTag: a212fd74-7cb0-45ea-abf2-c2774449ba4f
+
+	column SKU
+		dataType: string
+		lineageTag: 01a345ae-9c59-43ba-9cd9-083f49198cb0
+		summarizeBy: none
+		sourceColumn: SKU
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Produto'
+		dataType: string
+		lineageTag: ac2e7f36-02e3-4a10-9994-c2fa195ad3e8
+		summarizeBy: none
+		sourceColumn: Nome Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Cor Produto'
+		dataType: string
+		lineageTag: 2e08df4f-6bfb-4f9d-a3dc-1249b0403b0e
+		summarizeBy: none
+		sourceColumn: Cor Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Marca
+		dataType: string
+		lineageTag: 4666ad59-d381-4af3-9719-8e5e1963b25a
+		summarizeBy: none
+		sourceColumn: Marca
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo do Produto'
+		dataType: string
+		lineageTag: d656fda8-d4e2-432b-9c15-aa3182a7cb46
+		summarizeBy: none
+		sourceColumn: Tipo do Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Preço Unitario'
+		dataType: double
+		lineageTag: c1a0e1c6-c1f2-47cb-b0c8-ee50983d2420
+		summarizeBy: sum
+		sourceColumn: Preço Unitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Custo Unitario'
+		dataType: double
+		lineageTag: b1c64345-61a8-4673-8c6d-b3a70d4b1469
+		summarizeBy: sum
+		sourceColumn: Custo Unitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Ticket do Produto '
+		dataType: string
+		lineageTag: 4658c36d-1215-4a01-9ecd-a96ee425b481
+		summarizeBy: none
+		sourceColumn: "Ticket do Produto "
+
+		annotation SummarizationSetBy = Automatic
+
+	column Imagem
+		dataType: string
+		lineageTag: b88b6d64-2b40-4b9d-9e84-f101c43767b4
+		dataCategory: ImageUrl
+		summarizeBy: none
+		sourceColumn: Imagem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dProdutos = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados\Cadastro Produtos.xlsx"), null, true),
+				    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"SKU", type text}, {"Produto", type text}, {"Marca", type text}, {"Categoria", type text}, {"Preço Unitario", Int64.Type}, {"Custo Unitario", Int64.Type}, {"Observação", type text}}),
+				    #"Coluna dividida" = Table.TransformColumns(#"Tipo Alterado", {{"Preço Unitario", each _ / 100, type number}}),
+				    #"Coluna dividida1" = Table.TransformColumns(#"Coluna dividida", {{"Custo Unitario", each _ / 100, type number}}),
+				    #"Dividir Coluna por Delimitador" = Table.SplitColumn(#"Coluna dividida1", "Produto", Splitter.SplitTextByEachDelimiter({" - "}, QuoteStyle.Csv, true), {"Produto.1", "Produto.2"}),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Dividir Coluna por Delimitador",{{"Produto.1", type text}, {"Produto.2", type text}}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Tipo Alterado1",{{"Produto.1", "Nome Produto"}, {"Produto.2", "Cor Produto"}}),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Colunas Renomeadas",{"SKU", "Nome Produto", "Marca", "Cor Produto", "Categoria", "Preço Unitario", "Custo Unitario", "Observação"}),
+				    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Colunas Reordenadas", "Ticket do Produto ", each if [Preço Unitario] <= 500 then "Ticket Baixo" else if [Preço Unitario] <= 2000 then "Ticket Médio" else "Ticket Alto"),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Coluna Condicional Adicionada",{{"Categoria", "Tipo do Produto"}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Colunas Renomeadas1",{"Observação"}),
+				    #"Consultas Mescladas" = Table.NestedJoin(#"Colunas Removidas", {"Tipo do Produto"}, Imagens, {"Tipo do Produto"}, "Imagens", JoinKind.LeftOuter),
+				    #"Imagens Expandido" = Table.ExpandTableColumn(#"Consultas Mescladas", "Imagens", {"Imagem"}, {"Imagem"})
+				in
+				    #"Imagens Expandido"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

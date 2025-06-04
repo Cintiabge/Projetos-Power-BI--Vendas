@@ -1,0 +1,120 @@
+table dClientes
+	lineageTag: d51ee8d1-cb81-47c1-8c52-2c25d2d9f4e0
+
+	column 'ID Cliente'
+		dataType: int64
+		formatString: 0
+		lineageTag: 575ff593-852c-4d74-a2b4-5ce2a74d419b
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 612a3652-4312-4a47-9d26-6b5938f73d9d
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Genero
+		dataType: string
+		lineageTag: 57b58953-38c8-4005-8377-d542138bf866
+		summarizeBy: none
+		sourceColumn: Genero
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Nascimento'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0c2d7baf-7928-4ee7-bebf-b54194c329d4
+		summarizeBy: none
+		sourceColumn: Data Nascimento
+
+		variation Variation
+			isDefault
+			relationship: 873cfbe4-c66f-47a7-baea-31a0bae2881d
+			defaultHierarchy: LocalDateTable_d4a14be3-9a91-4246-a1de-7e4cc7575e0a.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Num Filhos'
+		dataType: int64
+		formatString: 0
+		lineageTag: d0579c04-9381-47ab-9766-6bfb94439d2e
+		summarizeBy: sum
+		sourceColumn: Num Filhos
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nivel Escolar'
+		dataType: string
+		lineageTag: 914b4ce3-6138-40e7-9cb9-859337c0a238
+		summarizeBy: none
+		sourceColumn: Nivel Escolar
+
+		annotation SummarizationSetBy = Automatic
+
+	column Documento
+		dataType: string
+		lineageTag: de7dd6ce-d21f-40ea-a79c-3e344663b35c
+		summarizeBy: none
+		sourceColumn: Documento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Estado Civil'
+		dataType: string
+		lineageTag: 84f35ba0-8430-4e0d-835b-15a846357058
+		summarizeBy: none
+		sourceColumn: Estado Civil
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Completo'
+		dataType: string
+		lineageTag: 6184130b-ebaf-4234-9558-376f093ec95d
+		summarizeBy: none
+		sourceColumn: Nome Completo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Idade
+		dataType: int64
+		formatString: 0
+		lineageTag: 6b9b6359-09ea-4e31-bfb9-7314e4cac724
+		summarizeBy: sum
+		sourceColumn: Idade
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dClientes = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados\Cadastro Clientes.xlsx"), null, true),
+				    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Plan1_Sheet,{{"Column1", type any}, {"Column2", type text}, {"Column3", type text}, {"Column4", type text}, {"Column5", type text}, {"Column6", type text}, {"Column7", type text}, {"Column8", type any}, {"Column9", type text}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Column11", "Column12"}),
+				    #"Linhas em Branco Removidas" = Table.SelectRows(#"Colunas Removidas", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Linhas em Branco Removidas", [PromoteAllScalars=true]),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Documento", type text}, {"Num Filhos", Int64.Type}, {"ID Cliente", Int64.Type}}),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado1","M","Masculino",Replacer.ReplaceText,{"Genero"}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Valor Substituído","F","Feminino",Replacer.ReplaceText,{"Genero"}),
+				    #"Tipo Alterado com Localidade" = Table.TransformColumnTypes(#"Valor Substituído1", {{"Data Nascimento", type date}}, "en-US"),
+				    #"Colunas Mescladas" = Table.CombineColumns(#"Tipo Alterado com Localidade",{"Primeiro Nome", "Sobrenome"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Nome Completo"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(#"Colunas Mescladas",{{"Nome Completo", Text.Proper, type text}}),
+				    #"Idade Inserida" = Table.AddColumn(#"Colocar Cada Palavra Em Maiúscula", "Idade", each Date.From(DateTime.LocalNow()) - [Data Nascimento], type duration),
+				    #"Total de Anos Calculado" = Table.TransformColumns(#"Idade Inserida",{{"Idade", each Duration.TotalDays(_) / 365, type number}}),
+				    #"Arredondado para Baixo" = Table.TransformColumns(#"Total de Anos Calculado",{{"Idade", Number.RoundDown, Int64.Type}})
+				in
+				    #"Arredondado para Baixo"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

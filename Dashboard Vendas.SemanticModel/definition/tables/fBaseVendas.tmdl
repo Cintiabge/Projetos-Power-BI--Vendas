@@ -1,0 +1,94 @@
+table fBaseVendas
+	lineageTag: 9eb426af-f5bd-43b7-a4a1-5d98826ec9f1
+
+	column 'Data da Venda'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: caf087d2-5990-4389-ae70-79dbde0c9332
+		summarizeBy: none
+		sourceColumn: Data da Venda
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Ordem de Compra'
+		dataType: string
+		lineageTag: 3b374978-ff5b-470b-824d-011a97820bfc
+		summarizeBy: none
+		sourceColumn: Ordem de Compra
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SKU
+		dataType: string
+		isHidden
+		lineageTag: 3499a475-da12-40f3-981c-813172ddb1b2
+		summarizeBy: none
+		sourceColumn: SKU
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 043c5a19-c84c-4654-b8b6-e6b0d3ba33c1
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Qtd Vendida'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8af48ed4-b900-4a65-93b1-150c053a76e9
+		summarizeBy: sum
+		sourceColumn: Qtd Vendida
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Loja'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f3b3e2e4-f030-447f-b74f-dd5d24c9a7b5
+		summarizeBy: none
+		sourceColumn: ID Loja
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo do Pedido' = IF(fBaseVendas[Qtd Vendida]=1,"Pedido Único","Pedido Múltiplo")
+		lineageTag: cebf3664-a43a-4ded-8ee1-b29854930ce8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fBaseVendas = m
+		mode: import
+		source =
+				let
+				    Fonte = Folder.Files("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados"),
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.StartsWith([Name], "Base Vendas")),
+				    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(#"Linhas Filtradas", each [Attributes]?[Hidden]? <> true),
+				    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo", each #"Transformar Arquivo"([Content])),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+				    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo"}),
+				    #"Coluna de Tabela Expandida1" = Table.ExpandTableColumn(#"Outras Colunas Removidas1", "Transformar Arquivo", Table.ColumnNames(#"Transformar Arquivo"(#"Arquivo de Amostra"))),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Coluna de Tabela Expandida1",{{"Nome da Origem", type text}, {"Data da Venda", type date}, {"Ordem de Compra", type text}, {"SKU", type text}, {"ID Cliente", Int64.Type}, {"Qtd Vendida", Int64.Type}, {"ID Loja", Int64.Type}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Nome da Origem"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

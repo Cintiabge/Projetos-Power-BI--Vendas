@@ -1,0 +1,76 @@
+table fDevoluções
+	lineageTag: 1ad7d3a4-b169-41d9-9bb7-82b3cf6d918c
+
+	column 'Data Devolução'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: fb72ec56-bf33-4861-ba22-96a5681e41e8
+		summarizeBy: none
+		sourceColumn: Data Devolução
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'ID Loja'
+		dataType: int64
+		formatString: 0
+		lineageTag: 07f980bb-4d7a-4e8a-b818-623e76b5bd9e
+		summarizeBy: none
+		sourceColumn: ID Loja
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column SKU
+		dataType: string
+		lineageTag: 084a113f-44a1-4fd6-af0d-4d294f20fdb6
+		summarizeBy: none
+		sourceColumn: SKU
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Qtd Devolvida'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5c4f008e-5c75-48ca-ae24-8b85afb0032b
+		summarizeBy: sum
+		sourceColumn: Qtd Devolvida
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Motivo Devolução'
+		dataType: string
+		lineageTag: b9fac8f0-a346-4104-9e82-de659f152395
+		summarizeBy: none
+		sourceColumn: Motivo Devolução
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fDevoluções = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados\Base Devoluções.xlsx"), null, true),
+				    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Data Devolução", type date}, {"ID Loja", Int64.Type}, {"SKU", type text}, {"Qtd Devolvida", Int64.Type}, {"Motivo Devolução", type text}}),
+				    #"Linhas em Branco Removidas" = Table.SelectRows(#"Tipo Alterado", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null})))
+				in
+				    #"Linhas em Branco Removidas"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

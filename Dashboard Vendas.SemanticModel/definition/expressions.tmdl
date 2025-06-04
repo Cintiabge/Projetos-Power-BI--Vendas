@@ -1,0 +1,77 @@
+expression dLocalidades =
+		let
+		    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados\Cadastro Localidades.xlsx"), null, true),
+		    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"ID Localidade", Int64.Type}, {"País", type text}, {"Continente", type text}})
+		in
+		    #"Tipo Alterado"
+	lineageTag: 14e1228b-6aab-4c89-9587-7deb5730120f
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression Parâmetro1 = #"Arquivo de Amostra" meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 27fcdd1e-cad0-47a3-90e9-a973cd907159
+	queryGroup: 'Transformar Arquivo de Aula 1 - Importando Base de Dados\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar o Arquivo de Exemplo' =
+		let
+		    Fonte = Excel.Workbook(Parâmetro1, null, true),
+		    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+	lineageTag: 00fe0f07-6c29-4e78-b441-5ad9289be789
+	queryGroup: 'Transformar Arquivo de Aula 1 - Importando Base de Dados'
+
+	annotation PBI_ResultType = Table
+
+expression 'Arquivo de Amostra' =
+		let
+		    Fonte = Folder.Files("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 1 - Importando Base de Dados\Aula 1 - Importando Base de Dados"),
+		    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.StartsWith([Name], "Base Vendas")),
+		    Navegação1 = #"Linhas Filtradas"{0}[Content]
+		in
+		    Navegação1
+	lineageTag: eacb8442-ef71-42ef-a663-9250d11beb74
+	queryGroup: 'Transformar Arquivo de Aula 1 - Importando Base de Dados\Consultas Auxiliares'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar Arquivo' =
+		let
+		    Fonte = (Parâmetro1 as binary) => let
+		    Fonte = Excel.Workbook(Parâmetro1, null, true),
+		    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Plan1_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+		in
+		    Fonte
+	mAttributes: [ FunctionQueryBinding = "{""exemplarFormulaName"":""Transformar o Arquivo de Exemplo""}" ]
+	lineageTag: 081730b7-5117-4cfe-ab9a-c568c2c256ba
+	queryGroup: 'Transformar Arquivo de Aula 1 - Importando Base de Dados\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Function
+
+expression Imagens =
+		let
+		    Fonte = Excel.Workbook(File.Contents("C:\Users\cinti\OneDrive\Área de Trabalho\powerbi\Aula 39 - Criando Links pras suas Imagens (Img BB)-20230831T182530Z-001\Aula 39 - Criando Links pras suas Imagens (Img BB)\Imagens.xlsx"), null, true),
+		    Plan1_Sheet = Fonte{[Item="Plan1",Kind="Sheet"]}[Data],
+		    #"Tipo Alterado" = Table.TransformColumnTypes(Plan1_Sheet,{{"Column1", type text}, {"Column2", type text}}),
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Tipo Alterado", [PromoteAllScalars=true]),
+		    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Tipo do Produto", type text}, {"Imagem", type text}})
+		in
+		    #"Tipo Alterado1"
+	lineageTag: c641bb6b-b32c-4be0-bf35-3353cbdb7bce
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

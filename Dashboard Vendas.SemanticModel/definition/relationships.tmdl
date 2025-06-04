@@ -1,0 +1,43 @@
+relationship 873cfbe4-c66f-47a7-baea-31a0bae2881d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dClientes.'Data Nascimento'
+	toColumn: LocalDateTable_d4a14be3-9a91-4246-a1de-7e4cc7575e0a.Date
+
+relationship 226ed560-1e92-fb9a-0841-a97dfc94da68
+	fromColumn: fBaseVendas.SKU
+	toColumn: dProdutos.SKU
+
+relationship d4b2d90f-20bb-5956-70b1-692d93673249
+	fromColumn: fBaseVendas.'ID Cliente'
+	toColumn: dClientes.'ID Cliente'
+
+relationship b7e7c3b3-e0ac-ba44-28a5-16c5dd013773
+	fromColumn: fBaseVendas.'ID Loja'
+	toColumn: dLojas.'ID Loja'
+
+relationship 9014c002-988d-d7a5-3495-7b20553391d3
+	fromColumn: fDevoluções.SKU
+	toColumn: dProdutos.SKU
+
+relationship d078cf67-8e1a-2ace-734c-a7db40b7d5a1
+	fromColumn: fDevoluções.'ID Loja'
+	toColumn: dLojas.'ID Loja'
+
+relationship 1b094a03-71cb-433f-b0e8-8c9eacddaa7a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dCalendário.Datas
+	toColumn: LocalDateTable_0805bc3f-fc94-46c5-aadf-d64288fc0d1d.Date
+
+relationship 5d3fa52d-b9fa-410b-9c93-b572056a5675
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dCalendário.'Inicio do Mês'
+	toColumn: LocalDateTable_6bd91c51-77d4-4d56-855e-05d6934b4cc7.Date
+
+relationship 89da9746-1dc5-be12-c0c6-72289299c648
+	fromColumn: fBaseVendas.'Data da Venda'
+	toColumn: dCalendário.Datas
+
+relationship 93a0764f-e0d7-3fa3-4462-34b5128374db
+	fromColumn: fDevoluções.'Data Devolução'
+	toColumn: dCalendário.Datas
+
